@@ -65,4 +65,13 @@ class AzulSpec extends FlatSpec{
     }
     // todo: multiple TileStocks
     // todo: generate list of Tiles by supplying tuples of colour and amount
+
+    "A TileStock with 4 Red tiles" should "translate to format \"TileStock[Red, Red, Red, Red]\" when the toString function is called" in {
+        val tileStock = new TileStock(List(Red, Red, Red, Red))
+        assert(tileStock.toString == "TileStock[Red, Red, Red, Red]")
+    }
+    "A TileStock with 2 Red and 2 Black tiles" should "translate to format \"TileStock[Red, Red, Black, Black]\" when the toString function is called" in {
+        val tileStock = new TileStock(List(Red, Red, Black, Black))
+        assert(tileStock.toString == "TileStock[Red, Red, Black, Black]")
+    }
 }

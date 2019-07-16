@@ -29,8 +29,8 @@ class TileFactory(tiles : List[Tile], val stockpile : List[Tile] = List()){
 }
 
 class TileStock(val tiles : List[Tile]){
-    // todo: write test for format: TileStock(Tile, Tile, Tile, Tile)
-    override def toString() : String = "TileStock(" + tiles.toString + ")"
+    override def toString() : String = "TileStock" + tiles.mkString("[",", ","]")
+    
     override def equals(other: Any): Boolean = other match {
         case that: TileStock => this.tiles == that.tiles
         case _ => false
