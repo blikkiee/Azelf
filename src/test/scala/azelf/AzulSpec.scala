@@ -26,6 +26,18 @@ class AzulSpec extends FlatSpec{
         assert(empty == Azul.shuffleTiles(empty))
     }
 
+    "The createTileCollection function" should "Accept a list of tuples (colour, amount) and produce a list of tiles" in {
+        val tileRequirements : List[(Tile, Int)] = List( 
+            (Red, 5),
+            (Blue, 5),
+            (Green, 5)
+        )
+        val tiles : List[Tile] = Azul.createTileCollection(tileRequirements)
+        assert(tiles.length == 15)
+        assert(tiles.filter(x => x == Green).length == 5)
+        assert(tiles.filter(x => x == Red).length == 5)
+    }
+
     "The tile factory" should "return red tiles if they are selected from one of its stocks" in {
         val tiles : List[Tile]        = List(Red, Red, Red, Red)
         val tileFactory : TileFactory = new TileFactory(tiles)
@@ -64,7 +76,6 @@ class AzulSpec extends FlatSpec{
         assert(updatedFactory.tileStocks.contains(tileStock))
     }
     // todo: multiple TileStocks
-    // todo: generate list of Tiles by supplying tuples of colour and amount
 
     "A TileStock with 4 Red tiles" should "translate to format \"TileStock[Red, Red, Red, Red]\" when the toString function is called" in {
         val tileStock = new TileStock(List(Red, Red, Red, Red))
