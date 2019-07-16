@@ -30,9 +30,15 @@ class AzulSpec extends FlatSpec{
         val tiles : List[Tile]        = List(Red, Red, Red, Red)
         val tileFactory : TileFactory = new TileFactory(tiles)
         val tileStock : TileStock     = new TileStock(tiles)
-        val (returnedTiles: List[Tile], updatedFactory: TileFactory) = Azul.selectTiles(Red, tileStock, tileFactory)
+        val (returnedTiles: List[Tile], _) = Azul.selectTiles(Red, tileStock, tileFactory)
         assert(returnedTiles.distinct == List(Red))
         assert(returnedTiles.length == 4)
     }
-    it should "transfer the remaining tiles to its stockpile from one of its stocks" in pending
+    it should "transfer the remaining tiles to its stockpile from one of its stocks" in {
+        val tiles : List[Tile]        = List(Red, Red, Green, Blue)
+        val tileFactory : TileFactory = new TileFactory(tiles)
+        val tileStock : TileStock     = new TileStock(tiles)
+        val (returnedTiles: List[Tile], updatedFactory: TileFactory) = Azul.selectTiles(Red, tileStock, tileFactory)
+        pending
+    }
 }
