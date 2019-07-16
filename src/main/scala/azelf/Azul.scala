@@ -15,16 +15,24 @@ object Azul {
     }
 
     def selectTiles(selectTileColour : Tile, fromTileStock : TileStock, fromTileFactory : TileFactory) : (List[Tile], TileFactory) = {
-        (fromTileStock.tiles.filter(x => x == selectTileColour), fromTileFactory)
-        // partition
+        def isTileStockInTileFactory() : Boolean = fromTileFactory.tileStocks.contains(fromTileStock)
+
+        val (returnedTiles : List[Tile], leftOverTiles : List[Tile]) = 
+            if(isTileStockInTileFactory) fromTileStock.tiles.partition(x => x == selectTileColour) 
+            else (List(), List())
+        ( returnedTiles, if(returnedTiles.length > 0) new TileFactory(List(), leftOverTiles) else fromTileFactory)
     }
 }
 
-class TileFactory(tiles : List[Tile])
-// ? wil je eigenlijk wel exceptions gooien?
-// (depending on amount of players) TileFactory should receive a maximum of ((1+2*nPlayer)*4) 36 tiles
-// it should recieve at least 1 tile
+class TileFactory(tiles : List[Tile], val stockpile : List[Tile] = List()){
+    val tileStocks : List[TileStock] = List(new TileStock(tiles))
+}
 
-class TileStock(val tiles : List[Tile])
-// ? wil je eigenlijk wel exceptions gooien?
-// it should recieve at least 1 tile
+class TileStock(val tiles : List[Tile]){
+    // todo: write test for format: TileStock(Tile, Tile, Tile, Tile)
+    override def toString() : String = "TileStock(" + tiles.toString + ")"
+    override def equals(other: Any): Boolean = other match {
+        case that: TileStock => this.tiles == that.tiles
+        case _ => false
+    }
+}

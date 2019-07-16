@@ -39,6 +39,29 @@ class AzulSpec extends FlatSpec{
         val tileFactory : TileFactory = new TileFactory(tiles)
         val tileStock : TileStock     = new TileStock(tiles)
         val (returnedTiles: List[Tile], updatedFactory: TileFactory) = Azul.selectTiles(Red, tileStock, tileFactory)
-        pending
+        assert(returnedTiles.length == 2)
+        assert(updatedFactory.stockpile.length == 2)
+        assert(updatedFactory.stockpile.contains(Green))
+        assert(updatedFactory.stockpile.contains(Blue))
     }
+    it should "not do anything if a tile colour is selected that was not included in the selected TileStock" in {
+        val tiles : List[Tile]        = List(Red, Red, Red, Red)
+        val tileFactory : TileFactory = new TileFactory(tiles)
+        val tileStock : TileStock     = new TileStock(tiles)
+        val (returnedTiles: List[Tile], updatedFactory: TileFactory) = Azul.selectTiles(Blue, tileStock, tileFactory)
+        assert(returnedTiles.isEmpty)
+        assert(updatedFactory.stockpile.isEmpty)
+        assert(updatedFactory.tileStocks.contains(tileStock))
+    }
+    it should "not do anything if a unknown TileStock is presented during tile selection" in {
+        val tiles : List[Tile]          = List(Red, Red, Red, Red)
+        val tileFactory : TileFactory   = new TileFactory(tiles)
+        val tileStock : TileStock       = new TileStock(tiles)
+        val fakeTileFactory : TileStock = new TileStock(List(Blue, Blue, Blue, Blue))
+        val (returnedTiles: List[Tile], updatedFactory: TileFactory) = Azul.selectTiles(Blue, fakeTileFactory, tileFactory)
+        assert(returnedTiles.isEmpty)
+        assert(updatedFactory.stockpile.isEmpty)
+        assert(updatedFactory.tileStocks.contains(tileStock))
+    }
+    // todo: multiple TileStocks
 }
