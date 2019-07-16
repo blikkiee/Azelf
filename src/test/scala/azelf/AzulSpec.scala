@@ -3,7 +3,7 @@ package Azelf
 import org.scalatest.FlatSpec
 
 class AzulSpec extends FlatSpec{
-    "The game shuffle functionality" should "shuffle tiles in any order other than the initial order" in {
+    "The shuffle functionality of the game" should "shuffle tiles in any order other than the initial order" in {
         val initialOrder : List[Tile] = List( Red, Blue, Black, Green, Yellow, Yellow, Green, Black, Blue, Red )
         val shuffled : List[Tile]     = Azul.shuffleTiles(initialOrder)
         assert(shuffled != initialOrder)
@@ -64,4 +64,5 @@ class AzulSpec extends FlatSpec{
         assert(updatedFactory.tileStocks.contains(tileStock))
     }
     // todo: multiple TileStocks
+    // todo: generate list of Tiles by supplying tuples of colour and amount
 }
