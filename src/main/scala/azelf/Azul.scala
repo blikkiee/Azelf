@@ -20,4 +20,19 @@ object Azul {
         }
         if (tiles.distinct.length > 1) shuffleRecursive() else tiles
     }
+
+    def placeTilesOnPatternLine(tiles: List[Tile], selectedPatternLine: PatternLine, player: Player) : Player = {
+        new Player()
+    }
+
+}
+
+class Player{
+    val patternLines: List[PatternLine] = List(new PatternLine)
+}
+
+class PatternLine{
+    def spaces: Int = 1
+    def isComplete: Boolean = true
+    def tileColour: Tile = Red
 }
