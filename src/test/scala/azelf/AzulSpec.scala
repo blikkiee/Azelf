@@ -3,6 +3,18 @@ package Azelf
 import org.scalatest.FlatSpec
 
 class AzulSpec extends FlatSpec{
+    "The createTileCollection function" should "accept a list of tuples (colour, amount) and produce a list of tiles" in {
+        val tileRequirements : List[(Tile, Int)] = List( 
+            (Red, 5),
+            (Blue, 5),
+            (Green, 5)
+        )
+        val tiles : List[Tile] = Azul.createTileCollection(tileRequirements)
+        assert(tiles.length == 15)
+        assert(tiles.filter(x => x == Green).length == 5)
+        assert(tiles.filter(x => x == Red).length == 5)
+    }
+    
     "The shuffle functionality of the game" should "shuffle tiles in any order other than the initial order" in {
         val initialOrder : List[Tile] = List( Red, Blue, Black, Green, Yellow, Yellow, Green, Black, Blue, Red )
         val shuffled : List[Tile]     = Azul.shuffleTiles(initialOrder)
@@ -24,18 +36,6 @@ class AzulSpec extends FlatSpec{
     it should "be able to handle empty collections of tiles" in {
         val empty : List[Tile] = List()
         assert(empty == Azul.shuffleTiles(empty))
-    }
-
-    "The createTileCollection function" should "Accept a list of tuples (colour, amount) and produce a list of tiles" in {
-        val tileRequirements : List[(Tile, Int)] = List( 
-            (Red, 5),
-            (Blue, 5),
-            (Green, 5)
-        )
-        val tiles : List[Tile] = Azul.createTileCollection(tileRequirements)
-        assert(tiles.length == 15)
-        assert(tiles.filter(x => x == Green).length == 5)
-        assert(tiles.filter(x => x == Red).length == 5)
     }
 
     "The tile factory" should "return red tiles if they are selected from one of its stocks" in {
@@ -69,19 +69,31 @@ class AzulSpec extends FlatSpec{
         val tiles : List[Tile]          = List(Red, Red, Red, Red)
         val tileFactory : TileFactory   = new TileFactory(tiles)
         val tileStock : TileStock       = new TileStock(tiles)
-        val fakeTileFactory : TileStock = new TileStock(List(Blue, Blue, Blue, Blue))
-        val (returnedTiles: List[Tile], updatedFactory: TileFactory) = Azul.selectTiles(Blue, fakeTileFactory, tileFactory)
+        val fakeTileStock : TileStock   = new TileStock(List(Blue, Blue, Blue, Blue))
+        val (returnedTiles: List[Tile], updatedFactory: TileFactory) = Azul.selectTiles(Blue, fakeTileStock, tileFactory)
         assert(returnedTiles.isEmpty)
         assert(updatedFactory.stockpile.isEmpty)
         assert(updatedFactory.tileStocks.contains(tileStock))
     }
+    it should "when containing multiple TileStocks still contain full TileStocks after tile selection" in {
+        val tiles : List[Tile] = Azul.createTileCollection(List(
+            (Red, 4),
+            (Blue, 4),
+            (Green, 4)
+        ))
+        val tileFactory : TileFactory = new TileFactory(tiles)
+        val selectedTileStock : TileStock = new TileStock(List(Red, Red, Red, Red))
+        val (_, updatedFactory : TileFactory) = Azul.selectTiles(Red, selectedTileStock, tileFactory)
+        assert(updatedFactory.tileStocks.length == 2)
+        assert(updatedFactory.tileStocks.contains(new TileStock(List(Green, Green, Green, Green))))
+    }
     // todo: multiple TileStocks
 
-    "A TileStock with 4 Red tiles" should "translate to format \"TileStock[Red, Red, Red, Red]\" when the toString function is called" in {
+    "A TileStock" should "(when containing 4 Red tiles) translate to format \"TileStock[Red, Red, Red, Red]\" when the toString function is called" in {
         val tileStock = new TileStock(List(Red, Red, Red, Red))
         assert(tileStock.toString == "TileStock[Red, Red, Red, Red]")
     }
-    "A TileStock with 2 Red and 2 Black tiles" should "translate to format \"TileStock[Red, Red, Black, Black]\" when the toString function is called" in {
+    it should "(when containing 2 Red tiles and 2 Black tiles) translate to format \"TileStock[Red, Red, Black, Black]\" when the toString function is called" in {
         val tileStock = new TileStock(List(Red, Red, Black, Black))
         assert(tileStock.toString == "TileStock[Red, Red, Black, Black]")
     }
