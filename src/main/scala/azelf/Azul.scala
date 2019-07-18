@@ -25,7 +25,7 @@ object Azul {
 object Player{
     def apply(): Player = {
         val patternLines = (for(i <- 1 to 5) yield new PatternLine(i)).toList
-        new Player(new FloorLine(), patternLines)
+        new Player(new FloorLine, patternLines)
     }
 }
 
@@ -38,7 +38,7 @@ class Player private(
                 case Some(p) => {
                     val (patternLine: PatternLine, remainingTiles: List[Tile]) = p.fill(tiles)
                     val updatedPatternLines: List[PatternLine] = patternLines.updated(selectedPatternLine-1, patternLine)
-                    new Player(new FloorLine(remainingTiles), updatedPatternLines)
+                    new Player(floorLine.fill(remainingTiles), updatedPatternLines)
                 }
                 case None => this
             }
@@ -63,4 +63,15 @@ class PatternLine(
         }
 }
 
-class FloorLine(val tiles: List[Tile] = List())
+class FloorLine(
+    val tiles: List[Tile] = List()
+    ){
+        def length: Int = tiles.length
+        def fill(newTiles: List[Tile]): FloorLine = new FloorLine(tiles :++ newTiles)
+        def peekScore: Int = if(length < 3) length * -1 else if (length < 6) length * -2 + 2 else length * -3 + 7
+        def score: (Int, List[Tile], FloorLine) = (peekScore, tiles, new FloorLine)
+        override def equals(other: Any): Boolean = other match {
+            case that: FloorLine => this.tiles == that.tiles
+            case _ => false
+        }
+}
