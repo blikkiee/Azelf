@@ -47,7 +47,21 @@ class PlayerSpec extends FlatSpec{
         assert(selectedPatternLine.filledSpaces == 1)
         assert(finalUpdatedPlayer.floorLine.tiles.length == 2)
     }
-    it should "transfer the tiles from its completed pattern lines to its wall" in pending
+    it should "transfer the tiles from its completed pattern lines to its wall" in {
+        val player: Player = Player()
+                .placeTilesOnPatternLine(List(Red), 1)
+                .placeTilesOnPatternLine(List(Green, Green), 2)
+                .coverWall
+        val wall: Wall = player.wall
+
+        assert(wall.countTiles == 2)
+        //assert(wall.tile(0, 2).get == (Red, true))
+        //assert(wall.tile(1, 0).get == (Green, true))
+        assert(wall.tile(2, 3).get == (Yellow, false))
+        assert(wall.tile(4, 4).get == (Blue, false))
+        assert(wall.tile(55, -4) == None)
+        // ? other?
+    }
     it should "redistribute the tiles from its completed pattern lines that are not tranfered to its wall" in pending
 
     "A wall" should "be able to calculate its current score" in pending
