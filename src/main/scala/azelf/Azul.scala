@@ -27,21 +27,40 @@ object Player{
         val patternLines = (for(i <- 1 to 5) yield new PatternLine(i)).toList
         new Player(new FloorLine(), patternLines)
     }
-
-    def placeTilesOnPatternLine(tiles: List[Tile], selectedPatternLine: Int, player: Player) : Player = {
-        val patternLine: PatternLine = new PatternLine(selectedPatternLine, Option(tiles.head))
-        val updatedPatternLines: List[PatternLine] = player.patternLines.updated(selectedPatternLine-1, patternLine)
-        val remainingTiles: List[Tile] = tiles.drop(selectedPatternLine)
-        new Player(new FloorLine(remainingTiles), updatedPatternLines)
-    }
 }
 
 class Player private(
     val floorLine: FloorLine, 
-    val patternLines: List[PatternLine])
+    val patternLines: List[PatternLine]
+    ){
+        def placeTilesOnPatternLine(tiles: List[Tile], selectedPatternLine: Int) : Player = {
+            patternLines.find(x => x.spaces == selectedPatternLine) match {
+                case Some(p) => {
+                    val (patternLine: PatternLine, remainingTiles: List[Tile]) = p.fill(tiles)
+                    val updatedPatternLines: List[PatternLine] = patternLines.updated(selectedPatternLine-1, patternLine)
+                    new Player(new FloorLine(remainingTiles), updatedPatternLines)
+                }
+                case None => this
+            }
+        }
+    }
 
-class PatternLine(val spaces: Int, val tileColour: Option[Tile] = None){
-    def isComplete: Boolean = true
+class PatternLine(
+    val spaces: Int, 
+    val filledSpaces: Int = 0, 
+    val tileColour: Option[Tile] = None
+    ){
+        def isComplete: Boolean = spaces == filledSpaces
+        def openSpaces: Int = spaces - filledSpaces
+        def fill(tiles: List[Tile]): (PatternLine, List[Tile]) = {
+            def fillAndUpdate(): (PatternLine, List[Tile]) = {
+                val newFilledSpaces: Int = if (tiles.length > openSpaces) spaces else tiles.length + filledSpaces
+                val newTileColour: Option[Tile] = if (filledSpaces == 0) Option(tiles.head) else tileColour
+                val remainingTiles: List[Tile] = tiles.drop(newFilledSpaces-filledSpaces)
+                (new PatternLine(spaces, newFilledSpaces, newTileColour), remainingTiles)
+            }
+            if(filledSpaces == 0 || Option(tiles.head) == tileColour) fillAndUpdate else (this, tiles)
+        }
 }
 
 class FloorLine(val tiles: List[Tile] = List())
