@@ -55,16 +55,43 @@ class PlayerSpec extends FlatSpec{
         val wall: Wall = player.wall
 
         assert(wall.countTiles == 2)
-        //assert(wall.tile(0, 2).get == (Red, true))
-        //assert(wall.tile(1, 0).get == (Green, true))
-        assert(wall.tile(2, 3).get == (Yellow, false))
-        assert(wall.tile(4, 4).get == (Blue, false))
+        assert(wall.tile(1, 3).get == (Red, true))
+        assert(wall.tile(2, 1).get == (Green, true))
+        assert(wall.tile(3, 4).get == (Yellow, false))
+        assert(wall.tile(5, 5).get == (Blue, false))
         assert(wall.tile(55, -4) == None)
-        // ? other?
+
+        // assert patternLine 1 and 2 are empty
+        // extra test to verify that pattern lines keep incomplete pattern lines
     }
     it should "redistribute the tiles from its completed pattern lines that are not tranfered to its wall" in pending
 
-    "A wall" should "be able to calculate its current score" in pending
+    "A pattern line" should "provide the tiles it contains if the it completed and asked to cover the wall" in {
+        val patternLine: PatternLine = new PatternLine(1)
+        val (filledPatternLine: PatternLine, _) = patternLine.fill(List(Red))
+        val (emptyPatternLine: PatternLine, tiles: List[Tile]) = filledPatternLine.empty
+
+        assert(tiles.length == filledPatternLine.filledSpaces)
+        assert(tiles.head == filledPatternLine.tileColour.get)
+        assert(emptyPatternLine.filledSpaces == 0)
+        assert(emptyPatternLine.tileColour == None)
+    }
+    it should "not provide the tiles it contains if the it incompleted and asked to cover the wall" in {
+        val patternLine: PatternLine = new PatternLine(2)
+        val (filledPatternLine: PatternLine, _) = patternLine.fill(List(Red))
+        val (nonEmptyPatternLine: PatternLine, tiles: List[Tile]) = filledPatternLine.empty
+
+        assert(tiles.length == 0)
+        assert(nonEmptyPatternLine.filledSpaces == filledPatternLine.filledSpaces)
+        assert(nonEmptyPatternLine.tileColour == filledPatternLine.tileColour)
+    }
+
+    "A wall" should "be able to accept a tile" in {
+        val wall: Wall = Wall().placeTile(Red, 1)
+        assert(wall.tile(1,3).get == (Red, true))
+    }
+    it should "not matter if a selected row already contains the colour of the new supplied tile" in pending
+    it should "be able to calculate its current score" in pending
 
     "A floor line" should "be able to accumulate multiple batches of tiles" in {
         val firstFloorLine: FloorLine = new FloorLine

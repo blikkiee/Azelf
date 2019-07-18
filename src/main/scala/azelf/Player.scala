@@ -22,7 +22,14 @@ class Player private(
             case None => this
         }
     }
-    def coverWall: Player = this
+    def coverWall: Player = {
+        val updatedWall: Wall = {
+            patternLines(0).isComplete
+            ???
+        }
+        val updatedPatternLines: List[PatternLine] = ???
+        new Player(floorLine, patternLines, updatedWall)
+    }
 }
 
 class PatternLine(
@@ -41,6 +48,7 @@ class PatternLine(
         }
         if(filledSpaces == 0 || Option(tiles.head) == tileColour) fillAndUpdate else (this, tiles)
     }
+    def empty: (PatternLine, List[Tile]) = if(isComplete) (new PatternLine(spaces), Azul.createTileCollection(List((tileColour.get, spaces)))) else (this, List())
 }
 
 class FloorLine(
@@ -69,9 +77,16 @@ class Wall private (
     private val tiles: List[List[(Tile, Boolean)]]
     // row, column, colour, filled
 ){
+    def placeTile(tile: Tile, row: Int): Wall = {
+        val selectedRow: List[(Tile, Boolean)] = tiles(row-1) //lift
+        val rowIndex: Int = selectedRow.indexOf((tile, false))
+        val newRow: List[(Tile, Boolean)] = selectedRow.updated(rowIndex, (tile, true))
+        new Wall(tiles.updated(row-1, newRow))
+    }
+
     def tile(row: Int, column: Int): Option[(Tile, Boolean)] = {
-        tiles.lift(row) match {
-            case Some(r) => r.lift(column)
+        tiles.lift(row-1) match {
+            case Some(r) => r.lift(column-1)
             case None => None
         }
     }
