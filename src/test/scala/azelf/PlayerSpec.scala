@@ -82,7 +82,20 @@ class PlayerSpec extends FlatSpec{
         assert(player.patternLines(2).filledSpaces == 2)
         assert(player.patternLines(3).filledSpaces == 0)
     }
-    it should "redistribute the tiles from its floorline and its completed pattern lines that are not tranfered to its wall" in pending
+    it should "redistribute the tiles from its floor line" in {
+        val (_, redundantTiles: List[Tile]) = Player()
+                .placeTilesOnPatternLine(List(Blue, Blue, Blue, Blue), 1)
+                .updateScore
+        
+        assert(redundantTiles.length == 3)
+    }
+    it should "not be able to play a tile colour on a pattern line that corresponds to a wall row that already contains that colour, those tiles should end on the floor line" in {
+        val (player: Player, _) = Player()
+                .placeTilesOnPatternLine(List(Red), 1)
+                .updateScore
+        val floorLine: FloorLine = player.placeTilesOnPatternLine(List(Red), 1).floorLine
+        assert(floorLine.length == 1)
+    }
 
     "A pattern line" should "provide the tiles it contains if the it completed and asked to cover the wall" in {
         val patternLine: PatternLine = new PatternLine(1)
@@ -108,7 +121,11 @@ class PlayerSpec extends FlatSpec{
         val wall: Wall = Wall().placeTile(Red, 1)
         assert(wall.getTile(1,3).get == (Red, true))
     }
-    it should "not matter if a selected row already contains the colour of the new supplied tile" in pending
+    it should "not matter if a selected row already contains the colour of the new supplied tile" in {
+        val wall: Wall = Wall().placeTile(Red, 1)
+                            .placeTile(Red, 1)
+        assert(wall.getTile(1,3).get == (Red, true))
+    }
     it should "be able to calculate its current score" in pending
 
     "A floor line" should "be able to accumulate multiple batches of tiles" in {

@@ -12,14 +12,21 @@ object Player {
 class Player private(
     val floorLine: FloorLine, 
     val patternLines: List[PatternLine],
-    val wall: Wall
+    val wall: Wall,
+    val score: Int = 0
 ){
     def placeTilesOnPatternLine(tiles: List[Tile], selectedPatternLine: Int) : Player = {
         patternLines.find(x => x.spaces == selectedPatternLine) match {
             case Some(p) => {
-                val (patternLine: PatternLine, remainingTiles: List[Tile]) = p.fill(tiles)
-                val updatedPatternLines: List[PatternLine] = patternLines.updated(selectedPatternLine-1, patternLine)
-                new Player(floorLine.fill(remainingTiles), updatedPatternLines, wall)
+                val wallRowIndex = patternLines.indexOf(p) + 1
+                if(wall.rowContains(wallRowIndex, tiles.head)) {
+                    new Player(floorLine.fill(tiles), patternLines, wall)
+                }
+                else {
+                    val (patternLine: PatternLine, remainingTiles: List[Tile]) = p.fill(tiles)
+                    val updatedPatternLines: List[PatternLine] = patternLines.updated(selectedPatternLine-1, patternLine)
+                    new Player(floorLine.fill(remainingTiles), updatedPatternLines, wall)
+                }
             }
             case None => this
         }
@@ -40,8 +47,9 @@ class Player private(
         
         val completedPatternLines = patternLines.filter(pl => pl.isComplete)
         val (updatedPatternLines: List[PatternLine], updatedWall: Wall, redundantTiles: List[Tile]) = coverWall(completedPatternLines, patternLines, wall)
-        // todo: update floorLine
-        (new Player(floorLine, updatedPatternLines, updatedWall), redundantTiles)
+        val wallScore: Int = 0 // updatedWall.getScore
+        val (floorLineScore: Int, floorLineTiles: List[Tile], updatedFloorLine: FloorLine) = floorLine.score
+        (new Player(updatedFloorLine, updatedPatternLines, updatedWall, floorLineScore + wallScore), redundantTiles :++ floorLineTiles)
     }
 }
 
@@ -90,8 +98,8 @@ class Wall private (
     private val tiles: List[List[(Tile, Boolean)]]
 ){
     def placeTile(tile: Tile, row: Int): Wall = {
-        val selectedRow: List[(Tile, Boolean)] = tiles(row-1) //lift
-        val rowIndex: Int = selectedRow.indexOf((tile, false))
+        val selectedRow: List[(Tile, Boolean)] = tiles(row-1) // todo: lift
+        val rowIndex: Int = selectedRow.indexWhere({case (colour, _) => colour == tile})
         val newRow: List[(Tile, Boolean)] = selectedRow.updated(rowIndex, (tile, true))
         new Wall(tiles.updated(row-1, newRow))
     }
@@ -102,4 +110,8 @@ class Wall private (
         } yield tile
 
     def countTiles: Int = tiles.flatten.filter({case (_, b) => b }).length
+
+    def rowContains(rowIndex: Int, tileColour: Tile) = {
+        tiles(rowIndex-1).exists(t => t == (tileColour, true))
+    }
 }
