@@ -96,10 +96,10 @@ class Wall private (
         new Wall(tiles.updated(row-1, newRow))
     }
 
-    def tile(row: Int, column: Int): Option[(Tile, Boolean)] = for {
-            c <- tiles.lift(row - 1)
-            t <- c.lift(column - 1) 
-        } yield t
+    def getTile(row: Int, column: Int): Option[(Tile, Boolean)] = for {
+            col <- tiles.lift(row - 1)
+            tile <- col.lift(column - 1) 
+        } yield tile
 
-    def countTiles: Int = 2
+    def countTiles: Int = tiles.flatten.filter({case (_, b) => b }).length
 }
