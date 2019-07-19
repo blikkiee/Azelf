@@ -1,5 +1,6 @@
 package Azelf
 
+import scala.annotation.tailrec
 import scala.util._
 
 // Create collection with tiles (10x black, 10x blue, 10x green, 10x red, 10x yellow) and shuffle it
@@ -14,7 +15,7 @@ object Azul {
     }
 
     def shuffleTiles(tiles: List[Tile]): List[Tile] = {
-        def shuffleRecursive(): List[Tile] = {
+        @tailrec def shuffleRecursive(): List[Tile] = {
             val shuffled = Random.shuffle(tiles)
             if (shuffled == tiles) shuffleRecursive else shuffled
         }

@@ -5,26 +5,22 @@ object TileFactory{
         val (factoryTiles: List[Tile], remainingTiles: List[Tile]) = tiles.splitAt((1+2*nPlayers)*4)
         (new TileFactory(factoryTiles), remainingTiles)
     }
+}
 
-    def selectTiles(selectTileColour: Tile, fromTileStock: TileStock, fromTileFactory: TileFactory): (List[Tile], TileFactory) = {
-        def isTileStockInTileFactory(): Boolean = fromTileFactory.tileStocks.contains(fromTileStock)
+class TileFactory private (tiles: List[Tile], val stockpile: List[Tile] = List()){
+    val tileStocks: List[TileStock] = tiles.grouped(4).toList.map(x => new TileStock(x))
+
+    def selectTiles(selectTileColour: Tile, fromTileStock: TileStock): (List[Tile], TileFactory) = {
+        def isTileStockInTileFactory(): Boolean = tileStocks.contains(fromTileStock)
 
         val (returnedTiles: List[Tile], leftOverTiles: List[Tile]) = 
             if(isTileStockInTileFactory) fromTileStock.tiles.partition(x => x == selectTileColour) 
             else (List(), List())
         val leftOverTileStockTiles: List[Tile] = {
-            val leftOverTileStocks = fromTileFactory.tileStocks.filterNot(x => x == fromTileStock)
+            val leftOverTileStocks = tileStocks.filterNot(x => x == fromTileStock)
             (for(stock <- leftOverTileStocks) yield stock.tiles).toList.flatten
         }
-        ( returnedTiles, if(returnedTiles.length > 0) new TileFactory(leftOverTileStockTiles, leftOverTiles) else fromTileFactory)
-    }
-}
-
-class TileFactory private (tiles: List[Tile], val stockpile: List[Tile] = List()){
-    val tileStocks: List[TileStock] = tilesToTileStock
-
-    def tilesToTileStock(): List[TileStock] = {
-        tiles.grouped(4).toList.map(x => new TileStock(x))
+        ( returnedTiles, if(returnedTiles.length > 0) new TileFactory(leftOverTileStockTiles, leftOverTiles) else this)
     }
 }
 

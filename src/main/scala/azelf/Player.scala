@@ -1,5 +1,7 @@
 package Azelf
 
+import scala.annotation.tailrec
+
 object Player {
     def apply(): Player = {
         val patternLines = (for(i <- 1 to 5) yield new PatternLine(i)).toList
@@ -23,10 +25,7 @@ class Player private(
         }
     }
     def updateScore: (Player, List[Tile]) = {
-        def placeOnWall(w: Wall, t: List[Tile], row: Int): (Wall, List[Tile]) = {
-            (w.placeTile(t.head, row), t.tail)
-        }
-
+        @tailrec
         def coverWall(patternLinesToUpdate: List[PatternLine], currentPatternLines: List[PatternLine], currentWall: Wall, currentTiles: List[Tile] = List()): (List[PatternLine], Wall, List[Tile]) = {
             val currentPL: PatternLine = patternLinesToUpdate.head
             val indexCurrentPL: Int = currentPatternLines.indexOf(currentPL)
@@ -35,11 +34,13 @@ class Player private(
             val newPatternLines: List[PatternLine] = currentPatternLines.updated(indexCurrentPL, newPL)
             if(patternLinesToUpdate.tail.isEmpty) (newPatternLines, newWall, redundantPLTiles) else coverWall(patternLinesToUpdate.tail, newPatternLines, newWall, redundantPLTiles)
         }
+        def placeOnWall(w: Wall, t: List[Tile], row: Int): (Wall, List[Tile]) = {
+            (w.placeTile(t.head, row), t.tail)
+        }
         
         val completedPatternLines = patternLines.filter(pl => pl.isComplete)
         val (updatedPatternLines: List[PatternLine], updatedWall: Wall, redundantTiles: List[Tile]) = coverWall(completedPatternLines, patternLines, wall)
         // todo: update floorLine
-        println("spaces " + updatedPatternLines(0).spaces + ", filled " + updatedPatternLines(0).filledSpaces)
         (new Player(floorLine, updatedPatternLines, updatedWall), redundantTiles)
     }
 }
@@ -78,7 +79,7 @@ class FloorLine(
 
 object Wall {
     def apply(): Wall = {
-        def rearrange(list: List[(Tile, Boolean)], iterations: Int) : List[(Tile, Boolean)] = if(iterations == 0) list else rearrange(list.last +: list.dropRight(1), iterations - 1)
+        @tailrec def rearrange(list: List[(Tile, Boolean)], iterations: Int) : List[(Tile, Boolean)] = if(iterations == 0) list else rearrange(list.last +: list.dropRight(1), iterations - 1)
         val row: List[(Tile, Boolean)] = List((Blue, false), (Yellow, false), (Red, false), (Black, false), (Green, false))
         val matrix: List[List[(Tile, Boolean)]] = (for (iRow <- 0 to 4) yield rearrange(row, iRow)).toList
         new Wall(matrix)
@@ -95,12 +96,10 @@ class Wall private (
         new Wall(tiles.updated(row-1, newRow))
     }
 
-    def tile(row: Int, column: Int): Option[(Tile, Boolean)] = {
-        tiles.lift(row-1) match {
-            case Some(r) => r.lift(column-1)
-            case None => None
-        }
-    }
+    def tile(row: Int, column: Int): Option[(Tile, Boolean)] = for {
+            c <- tiles.lift(row - 1)
+            t <- c.lift(column - 1) 
+        } yield t
 
     def countTiles: Int = 2
 }

@@ -8,7 +8,7 @@ class TileFactorySpec extends FlatSpec{
 
     "The tile factory" should "return red tiles if they are selected from one of its stocks" in {
         val (tileFactory: TileFactory, _) = TileFactory(redTiles, 2)
-        val (returnedTiles: List[Tile], _) = TileFactory.selectTiles(Red, redTileStock, tileFactory)
+        val (returnedTiles: List[Tile], _) = tileFactory.selectTiles(Red, redTileStock)
         assert(returnedTiles.distinct == List(Red))
         assert(returnedTiles.length == 4)
     }
@@ -16,7 +16,7 @@ class TileFactorySpec extends FlatSpec{
         val tiles: List[Tile]        = List(Red, Red, Green, Blue)
         val (tileFactory: TileFactory, _) = TileFactory(tiles, 2)
         val tileStock: TileStock     = new TileStock(tiles)
-        val (returnedTiles: List[Tile], updatedFactory: TileFactory) = TileFactory.selectTiles(Red, tileStock, tileFactory)
+        val (returnedTiles: List[Tile], updatedFactory: TileFactory) = tileFactory.selectTiles(Red, tileStock)
         assert(returnedTiles.length == 2)
         assert(updatedFactory.stockpile.length == 2)
         assert(updatedFactory.stockpile.contains(Green))
@@ -24,7 +24,7 @@ class TileFactorySpec extends FlatSpec{
     }
     it should "not do anything if a tile colour is selected that was not included in the selected TileStock" in {
         val (tileFactory: TileFactory, _) = TileFactory(redTiles, 2)
-        val (returnedTiles: List[Tile], updatedFactory: TileFactory) = TileFactory.selectTiles(Blue, redTileStock, tileFactory)
+        val (returnedTiles: List[Tile], updatedFactory: TileFactory) = tileFactory.selectTiles(Blue, redTileStock)
         assert(returnedTiles.isEmpty)
         assert(updatedFactory.stockpile.isEmpty)
         assert(updatedFactory.tileStocks.contains(redTileStock))
@@ -32,7 +32,7 @@ class TileFactorySpec extends FlatSpec{
     it should "not do anything if a unknown TileStock is presented during tile selection" in {
         val (tileFactory: TileFactory, _) = TileFactory(redTiles, 2)
         val fakeTileStock: TileStock      = new TileStock(List(Blue, Blue, Blue, Blue))
-        val (returnedTiles: List[Tile], updatedFactory: TileFactory) = TileFactory.selectTiles(Blue, fakeTileStock, tileFactory)
+        val (returnedTiles: List[Tile], updatedFactory: TileFactory) = tileFactory.selectTiles(Blue, fakeTileStock)
         assert(returnedTiles.isEmpty)
         assert(updatedFactory.stockpile.isEmpty)
         assert(updatedFactory.tileStocks.contains(redTileStock))
@@ -44,7 +44,7 @@ class TileFactorySpec extends FlatSpec{
             (Green, 4)
         ))
         val (tileFactory: TileFactory, _) = TileFactory(tiles, 2)
-        val (_, updatedFactory: TileFactory) = TileFactory.selectTiles(Red, redTileStock, tileFactory)
+        val (_, updatedFactory: TileFactory) = tileFactory.selectTiles(Red, redTileStock)
         assert(!updatedFactory.tileStocks.contains(redTileStock))
         assert(updatedFactory.tileStocks.length == 2)
         assert(updatedFactory.tileStocks.contains(new TileStock(List(Green, Green, Green, Green))))
