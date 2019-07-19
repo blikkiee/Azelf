@@ -48,10 +48,10 @@ class PlayerSpec extends FlatSpec{
         assert(finalUpdatedPlayer.floorLine.tiles.length == 2)
     }
     it should "transfer the tiles from its completed pattern lines to its wall" in {
-        val player: Player = Player()
+        val (player: Player, redundantTiles: List[Tile]) = Player()
                 .placeTilesOnPatternLine(List(Red), 1)
                 .placeTilesOnPatternLine(List(Green, Green), 2)
-                .coverWall
+                .updateScore
         val wall: Wall = player.wall
 
         assert(wall.countTiles == 2)
@@ -61,12 +61,14 @@ class PlayerSpec extends FlatSpec{
         assert(wall.tile(5, 5).get == (Blue, false))
         assert(wall.tile(55, -4) == None)
 
-        // assert patternLine 1 and 2 are empty
-        // extra test to verify that pattern lines keep incomplete pattern lines
+        assert(player.patternLines(0).filledSpaces == 0)
+        assert(player.patternLines(1).filledSpaces == 0)
+        assert(redundantTiles == List(Green))
     }
+    it should "keep incomplete pattern lines when transfering the tiles from the completed pattern lines to its wall" in pending
     it should "redistribute the tiles from its completed pattern lines that are not tranfered to its wall" in pending
 
-    "A pattern line" should "provide the tiles it contains if the it completed and asked to cover the wall" in {
+    /*"A pattern line" should "provide the tiles it contains if the it completed and asked to cover the wall" in {
         val patternLine: PatternLine = new PatternLine(1)
         val (filledPatternLine: PatternLine, _) = patternLine.fill(List(Red))
         val (emptyPatternLine: PatternLine, tiles: List[Tile]) = filledPatternLine.empty
@@ -84,7 +86,7 @@ class PlayerSpec extends FlatSpec{
         assert(tiles.length == 0)
         assert(nonEmptyPatternLine.filledSpaces == filledPatternLine.filledSpaces)
         assert(nonEmptyPatternLine.tileColour == filledPatternLine.tileColour)
-    }
+    }*/
 
     "A wall" should "be able to accept a tile" in {
         val wall: Wall = Wall().placeTile(Red, 1)

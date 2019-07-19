@@ -22,13 +22,25 @@ class Player private(
             case None => this
         }
     }
-    def coverWall: Player = {
-        val updatedWall: Wall = {
-            patternLines(0).isComplete
-            ???
+    def updateScore: (Player, List[Tile]) = {
+        def placeOnWall(w: Wall, t: List[Tile], row: Int): (Wall, List[Tile]) = {
+            (w.placeTile(t.head, row), t.tail)
         }
-        val updatedPatternLines: List[PatternLine] = ???
-        new Player(floorLine, patternLines, updatedWall)
+
+        def coverWall(patternLinesToUpdate: List[PatternLine], currentPatternLines: List[PatternLine], currentWall: Wall, currentTiles: List[Tile] = List()): (List[PatternLine], Wall, List[Tile]) = {
+            val currentPL: PatternLine = patternLinesToUpdate.head
+            val indexCurrentPL: Int = currentPatternLines.indexOf(currentPL)
+            val (newPL: PatternLine, plTiles: List[Tile]) = currentPL.empty
+            val (newWall: Wall, redundantPLTiles: List[Tile]) = placeOnWall(currentWall, plTiles, indexCurrentPL + 1)
+            val newPatternLines: List[PatternLine] = currentPatternLines.updated(indexCurrentPL, newPL)
+            if(patternLinesToUpdate.tail.isEmpty) (newPatternLines, newWall, redundantPLTiles) else coverWall(patternLinesToUpdate.tail, newPatternLines, newWall, redundantPLTiles)
+        }
+        
+        val completedPatternLines = patternLines.filter(pl => pl.isComplete)
+        val (updatedPatternLines: List[PatternLine], updatedWall: Wall, redundantTiles: List[Tile]) = coverWall(completedPatternLines, patternLines, wall)
+        // todo: update floorLine
+        println("spaces " + updatedPatternLines(0).spaces + ", filled " + updatedPatternLines(0).filledSpaces)
+        (new Player(floorLine, updatedPatternLines, updatedWall), redundantTiles)
     }
 }
 
@@ -75,7 +87,6 @@ object Wall {
 
 class Wall private (
     private val tiles: List[List[(Tile, Boolean)]]
-    // row, column, colour, filled
 ){
     def placeTile(tile: Tile, row: Int): Wall = {
         val selectedRow: List[(Tile, Boolean)] = tiles(row-1) //lift
