@@ -126,7 +126,62 @@ class PlayerSpec extends FlatSpec{
                             .placeTile(Red, 1)
         assert(wall.getTile(1,3).get == (Red, true))
     }
-    it should "be able to calculate its current score" in pending
+    it should "be able to calculate its current score (simple)" in {
+        val wall: Wall = Wall()
+                    .placeTile(Red, 1)
+                    .placeTile(Blue, 1)
+                    .placeTile(Yellow, 1)
+                    .placeTile(Green, 5)
+        val score: Int = wall.getScore
+        assert(score == 4)
+    }
+    it should "be able to calculate its current score (hard)" in {
+        val wall: Wall = Wall()
+                    .placeTile(Red, 1)
+                    .placeTile(Blue, 1)
+                    .placeTile(Yellow, 1)
+                    .placeTile(Black, 1)
+                    .placeTile(Blue, 2)
+                    .placeTile(Green, 2)
+        val score: Int = wall.getScore
+        assert(score == 10)
+    } // has neighbours?
+    it should "be able to calculate its final score (horizontals)" in {
+        val wall: Wall = Wall()
+                    .placeTile(Red, 1)
+                    .placeTile(Blue, 1)
+                    .placeTile(Yellow, 1)
+                    .placeTile(Green, 1)
+                    .placeTile(Black, 1)
+        val score: Int = wall.getScore
+        val finalScore: Int = wall.getFinalScore
+        assert(score == 5)
+        assert(finalScore == 7)
+    }
+    it should "be able to calculate its final score (vertical)" in {
+        val wall: Wall = Wall()
+                    .placeTile(Red, 1)
+                    .placeTile(Yellow, 2)
+                    .placeTile(Blue, 3)
+                    .placeTile(Green, 4)
+                    .placeTile(Black, 5)
+        val score: Int = wall.getScore
+        val finalScore: Int = wall.getFinalScore
+        assert(score == 5)
+        assert(finalScore == 12)
+    }
+    it should "be able to calculate its final score (diagonals)" in {
+        val wall: Wall = Wall()
+                    .placeTile(Red, 1)
+                    .placeTile(Red, 2)
+                    .placeTile(Red, 3)
+                    .placeTile(Red, 4)
+                    .placeTile(Red, 5)
+        val score: Int = wall.getScore
+        val finalScore: Int = wall.getFinalScore
+        assert(score == 5)
+        assert(finalScore == 15)
+    }
 
     "A floor line" should "be able to accumulate multiple batches of tiles" in {
         val firstFloorLine: FloorLine = new FloorLine

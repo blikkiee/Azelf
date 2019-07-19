@@ -114,4 +114,33 @@ class Wall private (
     def rowContains(rowIndex: Int, tileColour: Tile) = {
         tiles(rowIndex-1).exists(t => t == (tileColour, true))
     }
+
+    def getScore: Int = countTiles + countDoubleValueTiles
+
+    def countDoubleValueTiles: Int = {
+        def hasHorizontalNeighbour(row: Int, column: Int): Boolean =  {
+            val r = tiles(row) // lift?
+            column < 4 && r(column+1)._2 || 
+            column > 0 && r(column-1)._2
+        }
+        def hasVerticalNeighbour(row: Int, column: Int): Boolean = {
+            row < 4 && tiles(row+1)(column)._2 || 
+            row > 0 && tiles(row-1)(column)._2
+        }
+        def isDoubleValueTile(row: Int, column: Int): Boolean = {
+            hasHorizontalNeighbour(row, column) && hasVerticalNeighbour(row, column)
+        }
+
+        (for {
+            row <- 0 to 4
+            col <- 0 to 4
+            if(isDoubleValueTile(row, col))
+        } yield true).length // fold?
+    }
+
+    def getFinalScore: Int = getScore + getComboScore
+
+    def getComboScore: Int = {
+        0
+    }
 }
