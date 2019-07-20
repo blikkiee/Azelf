@@ -73,6 +73,36 @@ class TileFactorySpec extends FlatSpec{
         assert(tileFactory.tileStocks.map(x => x.tiles).toList.flatten.length == 36)
         assert(remainingTiles.length == 14)
     }
+    it should "translate to format " +
+    "\n\"TileFactory[" +
+    "\n\tTileStock[Red, Red, Red, Red]," + 
+    "\n\tTileStock[Green, Green, Green, Green]," + 
+    "\n\tStockPile[Green, Black]" + 
+    "\n]\"" +
+    "\nwhen the toString function is called" in {
+        val tiles: List[Tile] = Azul.createTileCollection(List(
+            (Red, 4),
+            (Green, 5),
+            (Black, 1),
+            (Blue, 2),
+        ))
+        val (initialTileFactory: TileFactory, _) = TileFactory(tiles, 2)
+        val (_, tileFactory: TileFactory) = initialTileFactory.selectTiles(Blue, new TileStock(List(Green, Black, Blue, Blue)))
+        val expectedFirstString: String = "TileFactory[" +
+            "\n\tTileStock[Red, Red, Red, Red]," + 
+            "\n\tTileStock[Green, Green, Green, Green]," + 
+            "\n\tTileStock[Green, Black, Blue, Blue]," + 
+            "\n\tStockPile[]" + 
+            "\n]"
+        val expectedLastString: String = "TileFactory[" +
+            "\n\tTileStock[Red, Red, Red, Red]," + 
+            "\n\tTileStock[Green, Green, Green, Green]," + 
+            "\n\tStockPile[Green, Black]" + 
+            "\n]"
+        println(expectedFirstString)
+        assert(expectedFirstString == initialTileFactory.toString)
+        assert(expectedLastString == tileFactory.toString)
+    }
 
     "A TileStock" should "(when containing 4 Red tiles) translate to format \"TileStock[Red, Red, Red, Red]\" when the toString function is called" in {
         assert(redTileStock.toString == "TileStock[Red, Red, Red, Red]")

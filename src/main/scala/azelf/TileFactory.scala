@@ -22,6 +22,11 @@ class TileFactory private (tiles: List[Tile], val stockpile: List[Tile] = List()
         }
         ( returnedTiles, if(returnedTiles.length > 0) new TileFactory(leftOverTileStockTiles, leftOverTiles) else this)
     }
+
+    override def toString(): String = "TileFactory[" +
+            tileStocks.mkString("\n\t", ",\n\t", ",") +
+            "\n\tStockPile" + stockpile.mkString("[",", ","]") + 
+            "\n]"
 }
 
 class TileStock(val tiles: List[Tile]){
