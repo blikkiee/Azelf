@@ -124,23 +124,33 @@ class Wall private (
             column > 0 && r(column-1)._2
         }
         def hasVerticalNeighbour(row: Int, column: Int): Boolean = {
-            row < 4 && tiles(row+1)(column)._2 || 
+            row < 4 && tiles(row+1)(column)._2 ||             
             row > 0 && tiles(row-1)(column)._2
         }
         def isDoubleValueTile(row: Int, column: Int): Boolean = {
-            hasHorizontalNeighbour(row, column) && hasVerticalNeighbour(row, column)
+            tiles(row)(column)._2 &&
+            hasHorizontalNeighbour(row, column) && 
+            hasVerticalNeighbour(row, column)
         }
 
         (for {
             row <- 0 to 4
             col <- 0 to 4
             if(isDoubleValueTile(row, col))
-        } yield true).length // fold?
+        } yield true).length
     }
 
     def getFinalScore: Int = getScore + getComboScore
 
+    // todo: refactor
     def getComboScore: Int = {
-        0
+        def rowIsComplete(row: Int) : Boolean = tiles(row).filter(x => x._2).length == 5
+        def columnIsComplete(column: Int) : Boolean = (for(row <- tiles; if(row(column)._2)) yield true).toList.length == 5 
+        def diagonalIsComplete(tile: Tile) : Boolean = (for(row <- tiles; if(row.exists(x => x._1 == tile && x._2))) yield true).toList.length == 5
+        val rowsScore: Int = (0 to 4).fold(0){ (acc: Int, row: Int) => if(rowIsComplete(row)) acc + 2 else acc }
+        val columnsScore: Int = (0 to 4).fold(0){ (acc: Int, column: Int) => if(columnIsComplete(column)) acc + 7 else acc }
+        val diagonalsScore: Int = List(Black, Blue, Green, Red, Yellow).foldLeft(0){ (acc: Int, tile: Tile) => if(diagonalIsComplete(tile)) acc + 10 else acc }
+
+        rowsScore + columnsScore + diagonalsScore
     }
 }

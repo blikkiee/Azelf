@@ -145,7 +145,7 @@ class PlayerSpec extends FlatSpec{
                     .placeTile(Green, 2)
         val score: Int = wall.getScore
         assert(score == 10)
-    } // has neighbours?
+    }
     it should "be able to calculate its final score (horizontals)" in {
         val wall: Wall = Wall()
                     .placeTile(Red, 1)
