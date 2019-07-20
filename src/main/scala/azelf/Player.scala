@@ -79,6 +79,7 @@ class FloorLine(
     def fill(newTiles: List[Tile]): FloorLine = new FloorLine(tiles :++ newTiles)
     def peekScore: Int = if(length < 3) length * -1 else if (length < 6) length * -2 + 2 else length * -3 + 7
     def score: (Int, List[Tile], FloorLine) = (peekScore, tiles, new FloorLine)
+    override def toString(): String = "FloorLine[" + tiles.mkString(", ") + "][score: " + peekScore + "]"
     override def equals(other: Any): Boolean = other match {
         case that: FloorLine => this.tiles == that.tiles
         case _ => false

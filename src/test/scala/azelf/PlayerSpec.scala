@@ -228,4 +228,12 @@ class PlayerSpec extends FlatSpec{
         assert(resetFloorLine == new FloorLine)
         assert(resetScore == 0)
     }
+    it should "translate to format " +
+    "\n\"FloorLine[Red, Green][score: -2]" +
+    "\nwhen the toString function is called" in {
+        val fl_0: FloorLine = new FloorLine()
+        val fl_2: FloorLine = new FloorLine(List(Red, Green))
+        assert("FloorLine[][score: 0]" == fl_0.toString)
+        assert("FloorLine[Red, Green][score: -2]" == fl_2.toString)
+    }
 }
