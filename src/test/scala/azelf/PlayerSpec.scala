@@ -149,7 +149,7 @@ class PlayerSpec extends FlatSpec{
                     .placeTile(Red, 1)
                     .placeTile(Blue, 1)
                     .placeTile(Yellow, 1)
-                    .placeTile(Black, 1)
+                    .placeTile(Purple, 1)
                     .placeTile(Blue, 2)
                     .placeTile(Green, 2)
         val score: Int = wall.getScore
@@ -161,7 +161,7 @@ class PlayerSpec extends FlatSpec{
                     .placeTile(Blue, 1)
                     .placeTile(Yellow, 1)
                     .placeTile(Green, 1)
-                    .placeTile(Black, 1)
+                    .placeTile(Purple, 1)
         val score: Int = wall.getScore
         val finalScore: Int = wall.getFinalScore
         assert(score == 5)
@@ -173,7 +173,7 @@ class PlayerSpec extends FlatSpec{
                     .placeTile(Yellow, 2)
                     .placeTile(Blue, 3)
                     .placeTile(Green, 4)
-                    .placeTile(Black, 5)
+                    .placeTile(Purple, 5)
         val score: Int = wall.getScore
         val finalScore: Int = wall.getFinalScore
         assert(score == 5)
@@ -191,6 +191,27 @@ class PlayerSpec extends FlatSpec{
         assert(score == 5)
         assert(finalScore == 15)
     }
+    it should "translate to format: " +
+    "\n|B _ _ _ _|" +
+    "\n|_ B _ _ _|" +
+    "\n|_ _ B _ _|" +
+    "\n|_ _ _ B _|" +
+    "\n|_ _ _ _ B|" +
+    "\nwhen the toString function is called" in {
+        val emptyWall: Wall = Wall()
+        val wall: Wall = Wall()
+                    .placeTile(Blue, 1)
+                    .placeTile(Yellow, 1)
+                    .placeTile(Red, 1)
+                    .placeTile(Purple, 1)
+                    .placeTile(Green, 1)
+                    .placeTile(Blue, 2)
+                    .placeTile(Blue, 3)
+                    .placeTile(Blue, 4)
+                    .placeTile(Blue, 5)
+        assert("|_ _ _ _ _|\n|_ _ _ _ _|\n|_ _ _ _ _|\n|_ _ _ _ _|\n|_ _ _ _ _|" == emptyWall.toString)
+        assert("|B Y R P G|\n|_ B _ _ _|\n|_ _ B _ _|\n|_ _ _ B _|\n|_ _ _ _ B|" == wall.toString)
+    }
 
     "A floor line" should "be able to accumulate multiple batches of tiles" in {
         val firstFloorLine: FloorLine = new FloorLine
@@ -204,7 +225,7 @@ class PlayerSpec extends FlatSpec{
     it should "be equal to another floor line if both contain the same tiles" in {
         val floorLine_1: FloorLine = new FloorLine(List(Red))
         val floorLine_2: FloorLine = new FloorLine(List(Red))
-        val floorLine_3: FloorLine = new FloorLine(List(Black))
+        val floorLine_3: FloorLine = new FloorLine(List(Purple))
 
         assert(floorLine_1 == floorLine_2)
         assert(floorLine_1 != floorLine_3)

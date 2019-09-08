@@ -51,7 +51,7 @@ class TileFactorySpec extends FlatSpec{
     }
     it should "accept only 20 tiles (=> 5 tile stocks) when there are 2 players" in {
         val _50tiles: List[Tile] = Azul.createTileCollection(List(
-            (Black, 10),
+            (Purple, 10),
             (Blue, 10),
             (Green, 10),
             (Red, 10),
@@ -63,7 +63,7 @@ class TileFactorySpec extends FlatSpec{
     }
     it should "accept only 36 tiles (=> 9 tile stocks) when there are 4 players" in {
         val _50tiles: List[Tile] = Azul.createTileCollection(List(
-            (Black, 10),
+            (Purple, 10),
             (Blue, 10),
             (Green, 10),
             (Red, 10),
@@ -77,27 +77,27 @@ class TileFactorySpec extends FlatSpec{
     "\n\"TileFactory[" +
     "\n\tTileStock[Red, Red, Red, Red]," + 
     "\n\tTileStock[Green, Green, Green, Green]," + 
-    "\n\tStockPile[Green, Black]" + 
+    "\n\tStockPile[Green, Purple]" + 
     "\n]\"" +
     "\nwhen the toString function is called" in {
         val tiles: List[Tile] = Azul.createTileCollection(List(
             (Red, 4),
             (Green, 5),
-            (Black, 1),
+            (Purple, 1),
             (Blue, 2),
         ))
         val (initialTileFactory: TileFactory, _) = TileFactory(tiles, 2)
-        val (_, tileFactory: TileFactory) = initialTileFactory.selectTiles(Blue, new TileStock(List(Green, Black, Blue, Blue)))
+        val (_, tileFactory: TileFactory) = initialTileFactory.selectTiles(Blue, new TileStock(List(Green, Purple, Blue, Blue)))
         val expectedFirstString: String = "TileFactory[" +
             "\n\tTileStock[Red, Red, Red, Red]," + 
             "\n\tTileStock[Green, Green, Green, Green]," + 
-            "\n\tTileStock[Green, Black, Blue, Blue]," + 
+            "\n\tTileStock[Green, Purple, Blue, Blue]," + 
             "\n\tStockPile[]" + 
             "\n]"
         val expectedLastString: String = "TileFactory[" +
             "\n\tTileStock[Red, Red, Red, Red]," + 
             "\n\tTileStock[Green, Green, Green, Green]," + 
-            "\n\tStockPile[Green, Black]" + 
+            "\n\tStockPile[Green, Purple]" + 
             "\n]"
         println(expectedFirstString)
         assert(expectedFirstString == initialTileFactory.toString)
@@ -107,8 +107,8 @@ class TileFactorySpec extends FlatSpec{
     "A TileStock" should "(when containing 4 Red tiles) translate to format \"TileStock[Red, Red, Red, Red]\" when the toString function is called" in {
         assert(redTileStock.toString == "TileStock[Red, Red, Red, Red]")
     }
-    it should "(when containing 2 Red tiles and 2 Black tiles) translate to format \"TileStock[Red, Red, Black, Black]\" when the toString function is called" in {
-        val tileStock = new TileStock(List(Red, Red, Black, Black))
-        assert(tileStock.toString == "TileStock[Red, Red, Black, Black]")
+    it should "(when containing 2 Red tiles and 2 Purple tiles) translate to format \"TileStock[Red, Red, Purple, Purple]\" when the toString function is called" in {
+        val tileStock = new TileStock(List(Red, Red, Purple, Purple))
+        assert(tileStock.toString == "TileStock[Red, Red, Purple, Purple]")
     }
 }

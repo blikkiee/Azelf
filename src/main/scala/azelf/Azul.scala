@@ -3,7 +3,7 @@ package Azelf
 import scala.annotation.tailrec
 import scala.util._
 
-// Create collection with tiles (10x black, 10x blue, 10x green, 10x red, 10x yellow) and shuffle it
+// Create collection with tiles (10x purple, 10x blue, 10x green, 10x red, 10x yellow) and shuffle it
 // Distribute tiles to tilefactory
 
 // todo: refactor; leesbaarder maken van functies: wat (voor stappen) doe je?

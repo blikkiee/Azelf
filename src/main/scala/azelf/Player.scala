@@ -104,7 +104,7 @@ class FloorLine(
 object Wall {
     def apply(): Wall = {
         @tailrec def rearrange(list: List[(Tile, Boolean)], iterations: Int) : List[(Tile, Boolean)] = if(iterations == 0) list else rearrange(list.last +: list.dropRight(1), iterations - 1)
-        val row: List[(Tile, Boolean)] = List((Blue, false), (Yellow, false), (Red, false), (Black, false), (Green, false))
+        val row: List[(Tile, Boolean)] = List((Blue, false), (Yellow, false), (Red, false), (Purple, false), (Green, false))
         val matrix: List[List[(Tile, Boolean)]] = (for (iRow <- 0 to 4) yield rearrange(row, iRow)).toList
         new Wall(matrix)
     }
@@ -165,8 +165,18 @@ class Wall private (
         def diagonalIsComplete(tile: Tile) : Boolean = (for(row <- tiles; if(row.exists(x => x._1 == tile && x._2))) yield true).toList.length == 5
         val rowsScore: Int = (0 to 4).fold(0){ (acc: Int, row: Int) => if(rowIsComplete(row)) acc + 2 else acc }
         val columnsScore: Int = (0 to 4).fold(0){ (acc: Int, column: Int) => if(columnIsComplete(column)) acc + 7 else acc }
-        val diagonalsScore: Int = List(Black, Blue, Green, Red, Yellow).foldLeft(0){ (acc: Int, tile: Tile) => if(diagonalIsComplete(tile)) acc + 10 else acc }
+        val diagonalsScore: Int = List(Purple, Blue, Green, Red, Yellow).foldLeft(0){ (acc: Int, tile: Tile) => if(diagonalIsComplete(tile)) acc + 10 else acc }
 
         rowsScore + columnsScore + diagonalsScore
+    }
+
+    override def toString(): String = {
+        def rowToString(row: List[(Tile, Boolean)]) : String = 
+            (for(tile <- row) yield {
+                if(tile._2) tile._1.toString()(0) 
+                else "_" 
+            }).mkString("|", " ", "|")
+
+        (for(row <- tiles) yield rowToString(row)).mkString("\n")
     }
 }

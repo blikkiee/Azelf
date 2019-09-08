@@ -16,7 +16,7 @@ class AzulSpec extends FlatSpec{
     }
     
     "The shuffle functionality of the game" should "shuffle tiles in any order other than the initial order" in {
-        val initialOrder: List[Tile] = List( Red, Blue, Black, Green, Yellow, Yellow, Green, Black, Blue, Red )
+        val initialOrder: List[Tile] = List( Red, Blue, Purple, Green, Yellow, Yellow, Green, Purple, Blue, Red )
         val shuffled: List[Tile]     = Azul.shuffleTiles(initialOrder)
         assert(shuffled != initialOrder)
         assert(shuffled.length == initialOrder.length)
