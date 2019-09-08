@@ -116,6 +116,15 @@ class PlayerSpec extends FlatSpec{
         assert(nonEmptyPatternLine.filledSpaces == filledPatternLine.filledSpaces)
         assert(nonEmptyPatternLine.tileColour == filledPatternLine.tileColour)
     }
+    it should "translate to format " +
+    "\n\"PatternLine[_ _ _ _ _]" +
+    "\n\"PatternLine[x _ _][Red]" +
+    "\nwhen the toString function is called" in {
+        val pl_5: PatternLine = new PatternLine(5)
+        val (pl_3: PatternLine, _) = new PatternLine(3).fill(List(Red))
+        assert("PatternLine[_ _ _ _ _]" == pl_5.toString)
+        assert("PatternLine[x _ _][Red]" == pl_3.toString)
+    }
 
     "A wall" should "be able to accept a tile" in {
         val wall: Wall = Wall().placeTile(Red, 1)

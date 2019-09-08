@@ -70,6 +70,21 @@ class PatternLine(
         if(filledSpaces == 0 || Option(tiles.head) == tileColour) fillAndUpdate else (this, tiles)
     }
     def empty: (PatternLine, List[Tile]) = if(isComplete) (new PatternLine(spaces), Azul.createTileCollection(List((tileColour.get, spaces)))) else (this, List())
+    override def toString(): String = {
+        if (filledSpaces == 0){
+             (for(i <- 1 to spaces) yield "_").mkString("PatternLine[", " ", "]")
+        }
+        else if (filledSpaces == spaces){
+            (for(i <- 1 to spaces) yield "x").mkString("PatternLine[", " ", s"][${tileColour.get}]")
+        }
+        else {
+            (for(i <- 1 to spaces - filledSpaces) yield "_").mkString(
+                (for(i <- 1 to filledSpaces) yield "x").mkString("PatternLine["," ", " "),
+                " ",
+                s"][${tileColour.get}]"
+            )
+        }
+    }
 }
 
 class FloorLine(
