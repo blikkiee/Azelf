@@ -20,17 +20,18 @@ class Player private(
             case Some(p) => {
                 val wallRowIndex = patternLines.indexOf(p) + 1
                 if(wall.rowContains(wallRowIndex, tiles.head)) {
-                    new Player(floorLine.fill(tiles), patternLines, wall)
+                    new Player(floorLine.fill(tiles), patternLines, wall, score)
                 }
                 else {
                     val (patternLine: PatternLine, remainingTiles: List[Tile]) = p.fill(tiles)
                     val updatedPatternLines: List[PatternLine] = patternLines.updated(selectedPatternLine-1, patternLine)
-                    new Player(floorLine.fill(remainingTiles), updatedPatternLines, wall)
+                    new Player(floorLine.fill(remainingTiles), updatedPatternLines, wall, score)
                 }
             }
             case None => this
         }
     }
+
     def updateScore: (Player, List[Tile]) = {
         @tailrec
         def coverWall(patternLinesToUpdate: List[PatternLine], currentPatternLines: List[PatternLine], currentWall: Wall, currentTiles: List[Tile] = List()): (List[PatternLine], Wall, List[Tile]) = {
@@ -47,9 +48,14 @@ class Player private(
         
         val completedPatternLines = patternLines.filter(pl => pl.isComplete)
         val (updatedPatternLines: List[PatternLine], updatedWall: Wall, redundantTiles: List[Tile]) = coverWall(completedPatternLines, patternLines, wall)
-        val wallScore: Int = 0 // updatedWall.getScore
+        val wallScore: Int = updatedWall.getScore
         val (floorLineScore: Int, floorLineTiles: List[Tile], updatedFloorLine: FloorLine) = floorLine.score
-        (new Player(updatedFloorLine, updatedPatternLines, updatedWall, floorLineScore + wallScore), redundantTiles :++ floorLineTiles)
+        val newScore: Int = floorLineScore + wallScore + score
+        (new Player(updatedFloorLine, updatedPatternLines, updatedWall, newScore), redundantTiles :++ floorLineTiles)
+    }
+
+    override def toString(): String = {
+        s"${for(pl <- patternLines) yield s"${pl.toString()}\n"}${floorLine}\n${wall}"
     }
 }
 

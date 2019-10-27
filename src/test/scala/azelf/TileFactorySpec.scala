@@ -99,7 +99,6 @@ class TileFactorySpec extends FlatSpec{
             "\n\tTileStock[Green, Green, Green, Green]," + 
             "\n\tStockPile[Green, Purple]" + 
             "\n]"
-        println(expectedFirstString)
         assert(expectedFirstString == initialTileFactory.toString)
         assert(expectedLastString == tileFactory.toString)
     }

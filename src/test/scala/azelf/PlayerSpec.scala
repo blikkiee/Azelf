@@ -117,8 +117,8 @@ class PlayerSpec extends FlatSpec{
         assert(nonEmptyPatternLine.tileColour == filledPatternLine.tileColour)
     }
     it should "translate to format " +
-    "\n\"PatternLine[_ _ _ _ _]" +
-    "\n\"PatternLine[x _ _][Red]" +
+    "\n\"PatternLine[_ _ _ _ _]\"" +
+    "\n\"PatternLine[x _ _][Red]\"" +
     "\nwhen the toString function is called" in {
         val pl_5: PatternLine = new PatternLine(5)
         val (pl_3: PatternLine, _) = new PatternLine(3).fill(List(Red))
@@ -259,11 +259,29 @@ class PlayerSpec extends FlatSpec{
         assert(resetScore == 0)
     }
     it should "translate to format " +
-    "\n\"FloorLine[Red, Green][score: -2]" +
+    "\n\"FloorLine[Red, Green][score: -2]\"" +
     "\nwhen the toString function is called" in {
         val fl_0: FloorLine = new FloorLine()
         val fl_2: FloorLine = new FloorLine(List(Red, Green))
         assert("FloorLine[][score: 0]" == fl_0.toString)
         assert("FloorLine[Red, Green][score: -2]" == fl_2.toString)
+    }
+
+    "The score of player" should "be equal to the sum of the wall and the floor line" in {
+        val (playerAfterRound1: Player, _) = Player()
+            .placeTilesOnPatternLine(List(Red, Red), 1)
+            .placeTilesOnPatternLine(List(Green, Green), 2)
+            .updateScore
+        val wallAfterRound1: Wall = playerAfterRound1.wall
+
+        val (playerAfterRound2: Player, _) = playerAfterRound1
+            .placeTilesOnPatternLine(List(Green), 1)
+            .updateScore
+        val wallAfterRound2: Wall = playerAfterRound2.wall
+
+        assert(wallAfterRound1.countTiles == 2)
+        assert(playerAfterRound1.score == 1)
+        assert(wallAfterRound2.countTiles == 3)
+        assert(playerAfterRound2.score == 4)
     }
 }
