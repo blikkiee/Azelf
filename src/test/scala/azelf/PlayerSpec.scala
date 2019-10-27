@@ -55,10 +55,10 @@ class PlayerSpec extends FlatSpec{
         val wall: Wall = player.wall
 
         assert(wall.countTiles == 2)
-        assert(wall.getTile(1, 3).get == (Red, true))
-        assert(wall.getTile(2, 1).get == (Green, true))
-        assert(wall.getTile(3, 4).get == (Yellow, false))
-        assert(wall.getTile(5, 5).get == (Blue, false))
+        assert(wall.getTile(1, 3).get == WallTile(Red, true))
+        assert(wall.getTile(2, 1).get == WallTile(Green, true))
+        assert(wall.getTile(3, 4).get == WallTile(Yellow, false))
+        assert(wall.getTile(5, 5).get == WallTile(Blue, false))
         assert(wall.getTile(55, -4) == None)
 
         assert(player.patternLines(0).filledSpaces == 0)
@@ -74,9 +74,9 @@ class PlayerSpec extends FlatSpec{
         val wall: Wall = player.wall
 
         assert(wall.countTiles == 1)
-        assert(wall.getTile(2, 4).get == (Red, false))
-        assert(wall.getTile(3, 2).get == (Green, false))
-        assert(wall.getTile(4, 4).get == (Blue, true))
+        assert(wall.getTile(2, 4).get == WallTile(Red, false))
+        assert(wall.getTile(3, 2).get == WallTile(Green, false))
+        assert(wall.getTile(4, 4).get == WallTile(Blue, true))
 
         assert(player.patternLines(1).filledSpaces == 1)
         assert(player.patternLines(2).filledSpaces == 2)
@@ -128,12 +128,19 @@ class PlayerSpec extends FlatSpec{
 
     "A wall" should "be able to accept a tile" in {
         val wall: Wall = Wall().placeTile(Red, 1)
-        assert(wall.getTile(1,3).get == (Red, true))
+        assert(wall.getTile(1,3).get == WallTile(Red, true))
     }
     it should "not matter if a selected row already contains the colour of the new supplied tile" in {
-        val wall: Wall = Wall().placeTile(Red, 1)
-                            .placeTile(Red, 1)
-        assert(wall.getTile(1,3).get == (Red, true))
+        val wall: Wall = Wall()
+            .placeTile(Red, 1)
+            .placeTile(Red, 1)
+        assert(wall.getTile(1,3).get == WallTile(Red, true))
+    }
+    it should "ignore non-existent requests for placing tiles" in {
+        val wall: Wall = Wall()
+            .placeTile(Red, 1)
+            .placeTile(Red, 6)
+        assert(wall.countTiles == 1)
     }
     it should "be able to calculate its current score (simple)" in {
         val wall: Wall = Wall()

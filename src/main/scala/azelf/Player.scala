@@ -109,32 +109,37 @@ class FloorLine(
 
 object Wall {
     def apply(): Wall = {
-        @tailrec def rearrange(list: List[(Tile, Boolean)], iterations: Int) : List[(Tile, Boolean)] = if(iterations == 0) list else rearrange(list.last +: list.dropRight(1), iterations - 1)
-        val row: List[(Tile, Boolean)] = List((Blue, false), (Yellow, false), (Red, false), (Purple, false), (Green, false))
-        val matrix: List[List[(Tile, Boolean)]] = (for (iRow <- 0 to 4) yield rearrange(row, iRow)).toList
+        @tailrec def rearrange(list: List[WallTile], iterations: Int) : List[WallTile] = if(iterations == 0) list else rearrange(list.last +: list.dropRight(1), iterations - 1)
+        val row: List[WallTile] = List(WallTile(Blue), WallTile(Yellow), WallTile(Red), WallTile(Purple), WallTile(Green))
+        val matrix: List[List[WallTile]] = (for (iRow <- 0 to 4) yield rearrange(row, iRow)).toList
         new Wall(matrix)
     }
 }
 
 class Wall private (
-    private val tiles: List[List[(Tile, Boolean)]]
+    private val tiles: List[List[WallTile]]
 ){
     def placeTile(tile: Tile, row: Int): Wall = {
-        val selectedRow: List[(Tile, Boolean)] = tiles(row-1) // todo: lift
-        val rowIndex: Int = selectedRow.indexWhere({case (colour, _) => colour == tile})
-        val newRow: List[(Tile, Boolean)] = selectedRow.updated(rowIndex, (tile, true))
-        new Wall(tiles.updated(row-1, newRow))
+        val selectedRow: Option[List[WallTile]] = tiles.lift(row-1)
+        selectedRow match {
+            case Some(selectedWallRow) => {
+                val tilePositionInRow: Int = selectedWallRow.indexWhere({case WallTile(colour, _) => colour == tile})
+                val updatedRow: List[WallTile] = selectedWallRow.updated(tilePositionInRow, WallTile(tile, true))
+                new Wall(tiles.updated(row-1, updatedRow))
+            }
+            case None => this
+        }
     }
 
-    def getTile(row: Int, column: Int): Option[(Tile, Boolean)] = for {
+    def getTile(row: Int, column: Int): Option[WallTile] = for {
             col <- tiles.lift(row - 1)
             tile <- col.lift(column - 1) 
         } yield tile
 
-    def countTiles: Int = tiles.flatten.filter({case (_, b) => b }).length
+    def countTiles: Int = tiles.flatten.filter({case WallTile(_, isFilled) => isFilled }).length
 
     def rowContains(rowIndex: Int, tileColour: Tile) = {
-        tiles(rowIndex-1).exists(t => t == (tileColour, true))
+        tiles(rowIndex-1).exists(t => t == WallTile(tileColour, true))
     }
 
     def getScore: Int = countTiles + countDoubleValueTiles
@@ -142,15 +147,15 @@ class Wall private (
     def countDoubleValueTiles: Int = {
         def hasHorizontalNeighbour(row: Int, column: Int): Boolean =  {
             val r = tiles(row) // lift?
-            column < 4 && r(column+1)._2 || 
-            column > 0 && r(column-1)._2
+            column < 4 && r(column+1).isFilled || 
+            column > 0 && r(column-1).isFilled
         }
         def hasVerticalNeighbour(row: Int, column: Int): Boolean = {
-            row < 4 && tiles(row+1)(column)._2 ||             
-            row > 0 && tiles(row-1)(column)._2
+            row < 4 && tiles(row+1)(column).isFilled ||             
+            row > 0 && tiles(row-1)(column).isFilled
         }
         def isDoubleValueTile(row: Int, column: Int): Boolean = {
-            tiles(row)(column)._2 &&
+            tiles(row)(column).isFilled &&
             hasHorizontalNeighbour(row, column) && 
             hasVerticalNeighbour(row, column)
         }
@@ -166,9 +171,9 @@ class Wall private (
 
     // todo: refactor
     def getComboScore: Int = {
-        def rowIsComplete(row: Int) : Boolean = tiles(row).filter(x => x._2).length == 5
-        def columnIsComplete(column: Int) : Boolean = (for(row <- tiles; if(row(column)._2)) yield true).toList.length == 5 
-        def diagonalIsComplete(tile: Tile) : Boolean = (for(row <- tiles; if(row.exists(x => x._1 == tile && x._2))) yield true).toList.length == 5
+        def rowIsComplete(row: Int) : Boolean = tiles(row).filter(x => x.isFilled).length == 5
+        def columnIsComplete(column: Int) : Boolean = (for(row <- tiles; if(row(column).isFilled)) yield true).toList.length == 5 
+        def diagonalIsComplete(tile: Tile) : Boolean = (for(row <- tiles; if(row.exists(x => x.colour == tile && x.isFilled))) yield true).toList.length == 5
         val rowsScore: Int = (0 to 4).fold(0){ (acc: Int, row: Int) => if(rowIsComplete(row)) acc + 2 else acc }
         val columnsScore: Int = (0 to 4).fold(0){ (acc: Int, column: Int) => if(columnIsComplete(column)) acc + 7 else acc }
         val diagonalsScore: Int = List(Purple, Blue, Green, Red, Yellow).foldLeft(0){ (acc: Int, tile: Tile) => if(diagonalIsComplete(tile)) acc + 10 else acc }
@@ -177,12 +182,17 @@ class Wall private (
     }
 
     override def toString(): String = {
-        def rowToString(row: List[(Tile, Boolean)]) : String = 
+        def rowToString(row: List[WallTile]) : String = 
             (for(tile <- row) yield {
-                if(tile._2) tile._1.toString()(0) 
+                if(tile.isFilled) tile.colour.toString()(0) 
                 else "_" 
             }).mkString("|", " ", "|")
 
         (for(row <- tiles) yield rowToString(row)).mkString("\n")
     }
 }
+
+object WallTile {
+    def apply(colour: Tile, isFilled: Boolean = false): WallTile = new WallTile(colour, isFilled)
+}
+case class WallTile(val colour: Tile, val isFilled: Boolean = false)
