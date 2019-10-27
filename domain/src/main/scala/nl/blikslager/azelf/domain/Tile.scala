@@ -1,4 +1,4 @@
-package Azelf
+package nl.blikslager.azelf.domain
 
 sealed trait Tile
 case object Purple extends Tile

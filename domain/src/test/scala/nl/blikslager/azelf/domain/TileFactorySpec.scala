@@ -1,4 +1,4 @@
-package Azelf
+package nl.blikslager.azelf.domain
 
 import org.scalatest.FlatSpec
 

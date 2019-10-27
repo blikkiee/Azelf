@@ -1,4 +1,4 @@
-package Azelf
+package nl.blikslager.azelf.domain
 
 object TileFactory{
     def apply(tiles: List[Tile], nPlayers: Int): (TileFactory, List[Tile]) = {

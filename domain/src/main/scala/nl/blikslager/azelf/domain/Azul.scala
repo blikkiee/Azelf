@@ -1,7 +1,8 @@
-package Azelf
+package nl.blikslager.azelf.domain
 
 import scala.annotation.tailrec
 import scala.util._
+import scala.io.StdIn._
 
 // Create collection with tiles (10x purple, 10x blue, 10x green, 10x red, 10x yellow) and shuffle it
 // Distribute tiles to tilefactory
